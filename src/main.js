@@ -57,10 +57,10 @@ loadBlockModel(1, '/models/yellow_2x2.glb', 0.47, 0.49, 0.47);
 loadBlockModel(2, '/models/brown_2x2.glb', 0.47, 0.49, 0.47);
 loadBlockModel(3, '/models/darkred_2x2.glb', 0.47, 0.49, 0.47);
 loadBlockModel(4, '/models/purple_2x2.glb', 0.47, 0.49, 0.47);
-loadBlockModel(5, '/models/white_2x2.glb', 0.45, 0.55, 0.45);
-loadBlockModel(6, '/models/blue_2x4.glb', 0.5, 0.5, 0.5);
-loadBlockModel(7, '/models/orange_2x4.glb', 0.5, 0.5, 0.5);
-loadBlockModel(8, '/models/red_2x4.glb', 0.5, 0.5, 0.5);
+// loadBlockModel(5, '/models/white_2x2.glb', 0.45, 0.55, 0.45);
+// loadBlockModel(6, '/models/blue_2x4.glb', 0.5, 0.5, 0.5);
+// loadBlockModel(7, '/models/orange_2x4.glb', 0.5, 0.5, 0.5);
+// loadBlockModel(8, '/models/red_2x4.glb', 0.5, 0.5, 0.5);
 
 // Load ground model
 function loadGround() {
@@ -255,14 +255,13 @@ function startGame() {
 // Event listener for the start button
 startButton.addEventListener('click', startGame);
 
-// Event listener to select block from menu
-document.querySelectorAll('.block-item').forEach((item) => {
-    item.addEventListener('click', (event) => {
-        const blockNumber = parseInt(event.currentTarget.getAttribute('data-block'));
-        selectedBlockNumber = blockNumber;
-        console.log(`Selected block number: ${selectedBlockNumber}`);
+// Event listener for block selection
+document.querySelectorAll('.block').forEach((blockElement) => {
+    blockElement.addEventListener('click', (event) => {
+      selectedBlockNumber = parseInt(event.currentTarget.getAttribute('data-block'));
+      console.log(`Selected block number: ${selectedBlockNumber}`);
     });
-});
+  });
 
 
 // Event listener for mouse click
