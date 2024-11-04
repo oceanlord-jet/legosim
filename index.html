@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lego Simulator</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { margin: 0; overflow: hidden; }
+        #threejs-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Three.js will render inside this container -->
+    <div id="threejs-container"></div>
+    <div id="crosshair">
+        <div class="line vertical"></div>
+        <div class="line horizontal"></div>
+    </div>
+
+    <!-- Controls information box -->
+  <div id="controls-box">
+    <div id="controls-title">Controls</div>
+    <ul>
+      <li>W - Forward</li>
+      <li>S - Backward</li>
+      <li>A - Left</li>
+      <li>D - Right</li>
+      <li>Q - Up</li>
+      <li>E - Down</li>
+      <li>Left Click - Place Block</li>
+      <li>Right Click - Remove Block</li>
+    </ul>
+  </div>
+
+   <!-- Title screen overlay -->
+   <div id="title-screen">
+    <div>Welcome to the Lego Simulator</div>
+    <button id="start-button">Start Game</button>
+  </div>
+
+  <div id="block-menu">
+    <div class="block-item" data-block="1">
+        <span class="color-dot" style="background-color: rgb(255, 255, 0);"></span>
+        1
+    </div>
+    <div class="block-item" data-block="2">
+        <span class="color-dot" style="background-color: rgb(165, 42, 42);"></span>
+        2
+    </div>
+    <div class="block-item" data-block="3">
+        <span class="color-dot" style="background-color: rgb(139, 0, 0);"></span>
+        3
+    </div>
+    <div class="block-item" data-block="4">
+        <span class="color-dot" style="background-color: rgb(128, 0, 128);"></span>
+        4
+    </div>
+    <div class="block-item" data-block="5">
+        <span class="color-dot" style="background-color: rgb(255, 255, 255);"></span>
+        5
+    </div>
+    <div class="block-item" data-block="6">
+        <span class="color-dot" style="background-color: rgb(0, 0, 255);"></span>
+        6
+    </div>
+    <div class="block-item" data-block="7">
+        <span class="color-dot" style="background-color: rgb(255, 165, 0);"></span>
+        7
+    </div>
+    <div class="block-item" data-block="8">
+        <span class="color-dot" style="background-color: rgb(255, 0, 0);"></span>
+        8
+    </div>
+</div>
+
+
+
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>
