@@ -77,7 +77,7 @@ body {
 
 
   /* Style for the start button */
-  #start-button {
+  #load-button {
     padding: 10px 20px;
     margin-top: 20px;
     font-size: 18px;
@@ -86,7 +86,20 @@ body {
     border: none;
     cursor: pointer;
   }
-  #start-button:hover {
+  #load-button:hover {
+    background-color: #218838;
+  }
+
+  #new-game-button {
+    padding: 10px 20px;
+    margin-top: 20px;
+    font-size: 18px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  #new-game-button:hover {
     background-color: #218838;
   }
 
