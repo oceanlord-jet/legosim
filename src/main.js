@@ -176,6 +176,16 @@ function handleMouseClick(event) {
                 );
                 scene.add(newBlock);
                 saveBlockData();
+                if (currentRoom) {
+                    socket.emit('blockUpdate', {
+                        roomId: currentRoom,
+                        type: 'add',
+                        blockData: {
+                            type: selectedBlockNumber,
+                            position: newBlock.position
+                        }
+                    });
+                }
             } else {
                 console.log(`Cannot place block too close to the camera. Minimum distance is ${minDistance}.`);
             }
@@ -192,6 +202,15 @@ function handleMouseClick(event) {
             if (!isGroundBlock) {
                 scene.remove(intersectedObject.parent || intersectedObject);
                 saveBlockData();
+                if (currentRoom) {
+                    socket.emit('blockUpdate', {
+                        roomId: currentRoom,
+                        type: 'remove',
+                        blockData: {
+                            position: intersectedObject.position
+                        }
+                    });
+                }
             }
         }
     }
@@ -236,43 +255,242 @@ window.addEventListener('mousedown', handleMouseClick);
 // Initialize socket connection
 const socket = io('http://localhost:3000');
 let currentRoom = null;
+const players = new Map();
+const playerMeshes = new Map();
+let isAnimating = false;
 
-// Add room management functions
-function createRoom() {
-  socket.emit('createRoom');
-  document.getElementById('room-status').textContent = 'Creating room...';
+// Socket connection status check
+socket.on('connect', () => {
+  console.log('Connected to server');
+  document.getElementById('room-status').textContent = 'Connected to server';
+});
+
+socket.on('connect_error', (error) => {
+  console.error('Connection error:', error);
+  document.getElementById('room-status').textContent = 'Server connection failed';
+});
+
+// Player mesh creation
+function createPlayerAvatar() {
+  const head = new THREE.Mesh(
+    new THREE.BoxGeometry(0.4, 0.4, 0.4),
+    new THREE.MeshLambertMaterial({ color: 0x00ff00 })
+  );
+  const body = new THREE.Mesh(
+    new THREE.BoxGeometry(0.4, 0.8, 0.2),
+    new THREE.MeshLambertMaterial({ color: 0x00ff00 })
+  );
+  body.position.y = -0.6;
+  head.add(body);
+  head.castShadow = true;
+  body.castShadow = true;
+  return head;
 }
 
-function joinRoom() {
-  const roomId = document.getElementById('room-id').value;
-  if (!roomId) {
-    document.getElementById('room-status').textContent = 'Please enter a room ID';
-    return;
-  }
-  socket.emit('joinRoom', roomId);
-  document.getElementById('room-status').textContent = 'Joining room...';
+// Room management
+function createRoom() {
+  const playerData = {
+    position: [camera.position.x, camera.position.y, camera.position.z],
+    rotation: [camera.rotation.x, camera.rotation.y, camera.rotation.z],
+    name: `Player${Math.floor(Math.random() * 1000)}`
+  };
+  socket.emit('createRoom', playerData);
+}
+
+// Update join room function with logging
+function joinRoom(roomId) {
+  console.log('Attempting to join room:', roomId);
+  
+  const playerData = {
+    position: [camera.position.x, camera.position.y, camera.position.z],
+    rotation: [camera.rotation.x, camera.rotation.y, camera.rotation.z],
+    name: `Player${Math.floor(Math.random() * 1000)}`
+  };
+  
+  socket.emit('joinRoom', { roomId, playerData });
 }
 
 // Socket event listeners
-socket.on('roomCreated', (roomId) => {
-  currentRoom = roomId;
-  document.getElementById('room-id').value = roomId;
-  document.getElementById('room-status').textContent = `Room created! ID: ${roomId}`;
+// Update room creation handler
+socket.on('roomCreated', (response) => {
+  console.log('Room creation response:', response); // Debug log
+  
+  // Handle string response (just roomId)
+  if (typeof response === 'string') {
+    currentRoom = response;
+    document.getElementById('room-status').textContent = `Room Created: ${response}`;
+    document.getElementById('room-id').value = response; // Show room ID in input
+    return;
+  }
+  
+  // Handle object response
+  if (response && response.roomId) {
+    currentRoom = response.roomId;
+    document.getElementById('room-status').textContent = `Room Created: ${response.roomId}`;
+    document.getElementById('room-id').value = response.roomId;
+    
+    if (response.state) {
+      loadGameState(response.state);
+    }
+  } else {
+    console.error('Invalid room creation response format:', response);
+    document.getElementById('room-status').textContent = 'Error creating room';
+  }
 });
 
-socket.on('joinedRoom', (roomId) => {
-  currentRoom = roomId;
-  document.getElementById('room-status').textContent = `Joined room: ${roomId}`;
-  startMultiplayerGame();
+socket.on('joinedRoom', (response) => {
+  console.log('Joined room response:', response);
+  
+  if (!response) {
+    console.error('Invalid join room response');
+    return;
+  }
+
+  currentRoom = response.roomId;
+  document.getElementById('room-status').textContent = `Joined Room: ${response.roomId}`;
+  
+  // Hide title screen and start game
+  titleScreen.style.display = 'none';
+  
+  // Load initial game state if provided
+  if (response.state) {
+    loadGameState(response.state);
+  }
+  
+  // Start animation loop if not already running
+  if (!isAnimating) {
+    isAnimating = true;
+    animate();
+  }
 });
 
-socket.on('roomError', (message) => {
-  document.getElementById('room-status').textContent = message;
+socket.on('playerJoined', (player) => {
+  if (player.id !== socket.id) {
+    const playerMesh = createPlayerAvatar();
+    playerMesh.position.set(...player.position);
+    scene.add(playerMesh);
+    players.set(player.id, player);
+    playerMeshes.set(player.id, playerMesh);
+  }
 });
 
-// Add event listeners
-document.getElementById('create-room-button').addEventListener('click', createRoom);
-document.getElementById('join-room-button').addEventListener('click', joinRoom);
+socket.on('playerMoved', (data) => {
+  if (data.id !== socket.id) {
+    const playerMesh = playerMeshes.get(data.id);
+    if (playerMesh) {
+      playerMesh.position.set(...data.position);
+      playerMesh.rotation.set(...data.rotation);
+    }
+  }
+});
+
+socket.on('playerLeft', (playerId) => {
+  const playerMesh = playerMeshes.get(playerId);
+  if (playerMesh) {
+    scene.remove(playerMesh);
+    playerMeshes.delete(playerId);
+    players.delete(playerId);
+  }
+});
+
+socket.on('blockAdded', (blockData) => {
+  const block = blockModels[blockData.type].clone();
+  block.position.copy(blockData.position);
+  block.userData.blockType = blockData.type;
+  scene.add(block);
+});
+
+socket.on('blockRemoved', (position) => {
+  scene.children.forEach((child) => {
+    if (child.position.equals(position)) {
+      scene.remove(child);
+    }
+  });
+});
+
+// Error handling
+socket.on('connect_error', (error) => {
+  console.error('Connection error:', error);
+  document.getElementById('room-status').textContent = 'Connection error!';
+});
+
+// Add join room error handler
+socket.on('roomError', (error) => {
+  console.error('Room error:', error);
+  document.getElementById('room-status').textContent = `Error: ${error}`;
+});
+
+// Game state management
+function loadGameState(state) {
+  if (!state) {
+    console.warn('No state provided to loadGameState');
+    return;
+  }
+
+  try {
+    // Clear existing blocks except ground
+    scene.children.forEach((child) => {
+      if (child.userData.blockType) {
+        scene.remove(child);
+      }
+    });
+
+    // Load blocks if they exist
+    if (state.blocks && Array.isArray(state.blocks)) {
+      state.blocks.forEach((blockData) => {
+        if (blockData && blockData.type && blockData.position) {
+          const block = blockModels[blockData.type].clone();
+          block.position.copy(blockData.position);
+          block.userData.blockType = blockData.type;
+          scene.add(block);
+        }
+      });
+    }
+
+    // Load players if they exist
+    if (state.players && Array.isArray(state.players)) {
+      state.players.forEach((player) => {
+        if (player && player.id && player.id !== socket.id) {
+          const playerMesh = createPlayerAvatar();
+          playerMesh.position.set(...player.position);
+          scene.add(playerMesh);
+          players.set(player.id, player);
+          playerMeshes.set(player.id, playerMesh);
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Error loading game state:', error);
+  }
+}
+
+// Player management
+function updatePlayerCount() {
+  const count = players.size + 1; // +1 for local player
+  document.getElementById('player-count').textContent = `Players: ${count}/${ROOM_MAX_PLAYERS}`;
+}
+
+// Complete playerLeft handler
+socket.on('playerLeft', (playerId) => {
+  const playerMesh = playerMeshes.get(playerId);
+  if (playerMesh) {
+    scene.remove(playerMesh);
+    playerMeshes.delete(playerId);
+    players.delete(playerId);
+    updatePlayerCount();
+  }
+});
+
+// Reconnection handling
+socket.on('disconnect', () => {
+  document.getElementById('room-status').textContent = 'Disconnected - Trying to reconnect...';
+});
+
+socket.on('reconnect', () => {
+  if (currentRoom) {
+    joinRoom(currentRoom); // Rejoin current room
+  }
+});
 
 function startMultiplayerGame() {
   titleScreen.style.display = 'none';
@@ -280,11 +498,30 @@ function startMultiplayerGame() {
   animate();
 }
 
+// Add button event listeners
+document.getElementById('create-room-button').addEventListener('click', createRoom);
+document.getElementById('join-room-button').addEventListener('click', () => {
+  const roomId = document.getElementById('room-id').value;
+  joinRoom(roomId);
+});
+
 function animate() {
-    requestAnimationFrame(animate);
-    updateCameraPosition();
-    controls.update();
-    renderer.render(scene, camera);
+  if (!isAnimating) return;
+  
+  requestAnimationFrame(animate);
+  updateCameraPosition();
+  controls.update();
+  
+  // Sync player position if in multiplayer
+  if (currentRoom) {
+    socket.emit('playerMove', {
+      roomId: currentRoom,
+      position: [camera.position.x, camera.position.y, camera.position.z],
+      rotation: [camera.rotation.x, camera.rotation.y, camera.rotation.z]
+    });
+  }
+  
+  renderer.render(scene, camera);
 }
 
 animate();
