@@ -12,12 +12,24 @@ const RENDER_EXTERNAL_URL = process.env.RENDER_EXTERNAL_URL;
 
 const io = new Server(server, {
   cors: { 
-    origin: process.env.NODE_ENV === 'production' 
-      ? "https://legosimulator.vercel.app/" // Update with your client URL
-      : "http://localhost:5173",
-    methods: ["GET", "POST"]
+    origin: [
+      "https://legosimulator.vercel.app", // Remove trailing slash
+      "http://localhost:5173"
+    ],
+    methods: ["GET", "POST"],
+    credentials: true,
+    allowedHeaders: ["my-custom-header"],
   }
 });
+
+// Add CORS middleware for Express
+app.use(cors({
+  origin: [
+    "https://legosimulator.vercel.app",
+    "http://localhost:5173"
+  ],
+  credentials: true
+}));
 
 const ROOM_MAX_PLAYERS = 4;
 
