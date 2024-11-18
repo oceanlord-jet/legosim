@@ -1,5 +1,5 @@
 {
-  "name": "my-lego-simulator",
+  "name": "lego-simulator-server",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -16,8 +16,8 @@
   "dependencies": {
     "@react-three/cannon": "^6.6.0",
     "cors": "^2.8.5",
-    "express": "^4.21.1",
-    "socket.io": "^4.8.1",
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2",
     "socket.io-client": "^4.8.1",
     "three": "^0.169.0"
   }
