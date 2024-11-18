@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
+import { io } from 'socket.io-client';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -231,6 +232,53 @@ document.querySelectorAll('.block').forEach((blockElement) => {
 });
 
 window.addEventListener('mousedown', handleMouseClick);
+
+// Initialize socket connection
+const socket = io('http://localhost:3000');
+let currentRoom = null;
+
+// Add room management functions
+function createRoom() {
+  socket.emit('createRoom');
+  document.getElementById('room-status').textContent = 'Creating room...';
+}
+
+function joinRoom() {
+  const roomId = document.getElementById('room-id').value;
+  if (!roomId) {
+    document.getElementById('room-status').textContent = 'Please enter a room ID';
+    return;
+  }
+  socket.emit('joinRoom', roomId);
+  document.getElementById('room-status').textContent = 'Joining room...';
+}
+
+// Socket event listeners
+socket.on('roomCreated', (roomId) => {
+  currentRoom = roomId;
+  document.getElementById('room-id').value = roomId;
+  document.getElementById('room-status').textContent = `Room created! ID: ${roomId}`;
+});
+
+socket.on('joinedRoom', (roomId) => {
+  currentRoom = roomId;
+  document.getElementById('room-status').textContent = `Joined room: ${roomId}`;
+  startMultiplayerGame();
+});
+
+socket.on('roomError', (message) => {
+  document.getElementById('room-status').textContent = message;
+});
+
+// Add event listeners
+document.getElementById('create-room-button').addEventListener('click', createRoom);
+document.getElementById('join-room-button').addEventListener('click', joinRoom);
+
+function startMultiplayerGame() {
+  titleScreen.style.display = 'none';
+  // Initialize multiplayer specific setup
+  animate();
+}
 
 function animate() {
     requestAnimationFrame(animate);
