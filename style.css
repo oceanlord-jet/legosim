@@ -1,5 +1,3 @@
-
-
 body {
     margin: 0;
     overflow: hidden;
@@ -65,18 +63,70 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-direction: column;
-    color: white;
-    font-family: Arial, sans-serif;
-    font-size: 24px;
   }
 
+.title-content {
+  text-align: center;
+  padding: 40px;
+  border-radius: 20px;
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.8s ease-out;
+}
 
-  /* Style for the start button */
+.title-content h1 {
+  font-size: 48px;
+  font-weight: 800;
+  margin-bottom: 40px;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: 4px;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+#new-game-button,
+#load-button {
+  padding: 20px 40px;
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  background-color: rgba(40, 167, 69, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 2px;
+  min-width: 300px;
+}
+
+#new-game-button:hover,
+#load-button:hover {
+  background-color: rgba(40, 167, 69, 1);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
   #load-button {
     padding: 10px 20px;
     margin-top: 20px;
@@ -129,4 +179,3 @@ body {
     border-radius: 50%;
     margin-right: 5px;
   }
-  
