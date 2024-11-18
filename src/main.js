@@ -253,7 +253,11 @@ document.querySelectorAll('.block').forEach((blockElement) => {
 window.addEventListener('mousedown', handleMouseClick);
 
 // Initialize socket connection
-const socket = io('http://localhost:3000');
+const SOCKET_URL = import.meta.env.PROD 
+  ? "https://lego-simulator-server.onrender.com"  // Update after deployment
+  : "http://localhost:3000";
+
+const socket = io(SOCKET_URL);
 let currentRoom = null;
 const players = new Map();
 const playerMeshes = new Map();

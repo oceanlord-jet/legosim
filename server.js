@@ -6,8 +6,17 @@ import cors from 'cors';
 
 const app = express();
 const server = createServer(app);
+
+const PORT = process.env.PORT || 3000;
+const RENDER_EXTERNAL_URL = process.env.RENDER_EXTERNAL_URL;
+
 const io = new Server(server, {
-  cors: { origin: "*" }
+  cors: { 
+    origin: process.env.NODE_ENV === 'production' 
+      ? "https://legosimulator.vercel.app/" // Update with your client URL
+      : "http://localhost:5173",
+    methods: ["GET", "POST"]
+  }
 });
 
 const ROOM_MAX_PLAYERS = 4;
@@ -146,6 +155,6 @@ io.on('connection', socket => {
   });
 });
 
-server.listen(3000, () => {
-  console.log('Server running on port 3000');
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`);
 });
