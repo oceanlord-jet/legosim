@@ -77,6 +77,11 @@ body {
   background-color: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(5px);
   animation: fadeIn 0.8s ease-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 30px;
 }
 
 .title-content h1 {
@@ -91,7 +96,9 @@ body {
 .button-container {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 20px;
+  width: 100%;
 }
 
 #new-game-button,
@@ -106,7 +113,9 @@ body {
   cursor: pointer;
   transition: all 0.3s ease;
   letter-spacing: 2px;
-  min-width: 300px;
+  width: 300px;
+  margin: 10px 0;
+  text-align: center;
 }
 
 #new-game-button:hover,
@@ -128,29 +137,45 @@ body {
 }
 
   #load-button {
-    padding: 10px 20px;
-    margin-top: 20px;
-    font-size: 18px;
-    background-color: #28a745;
+    padding: 20px 40px;
+    font-size: 24px;
+    font-weight: bold;
     color: white;
-    border: none;
+    background-color: rgba(40, 167, 69, 0.9);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
     cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 2px;
+    width: 300px;
+    margin: 10px 0;
+    text-align: center;
   }
   #load-button:hover {
-    background-color: #218838;
+    background-color: rgba(40, 167, 69, 1);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   }
 
   #new-game-button {
-    padding: 10px 20px;
-    margin-top: 20px;
-    font-size: 18px;
-    background-color: #28a745;
+    padding: 20px 40px;
+    font-size: 24px;
+    font-weight: bold;
     color: white;
-    border: none;
+    background-color: rgba(40, 167, 69, 0.9);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
     cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 2px;
+    width: 300px;
+    margin: 10px 0;
+    text-align: center;
   }
   #new-game-button:hover {
-    background-color: #218838;
+    background-color: rgba(40, 167, 69, 1);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   }
 
   #block-selector {
@@ -179,3 +204,107 @@ body {
     border-radius: 50%;
     margin-right: 5px;
   }
+
+/* Room management container */
+.multiplayer-controls {
+  margin-bottom: 40px;
+  width: 100%;
+  max-width: 400px;
+  display:
+}
+
+/* Room ID input styling */
+#room-id {
+  width: 300px;
+  padding: 20px;
+  margin-bottom: 20px;
+  font-size: 24px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  color: white;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+#room-id:focus {
+  outline: none;
+  border-color: rgba(40, 167, 69, 0.5);
+  box-shadow: 0 0 10px rgba(40, 167, 69, 0.2);
+}
+
+#room-id::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Room buttons styling */
+#create-room-button,
+#join-room-button {
+  padding: 20px 40px;
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  background-color: rgba(40, 167, 69, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 2px;
+  width: 300px;
+  margin: 10px 0;
+  text-align: center;
+}
+
+#create-room-button:hover,
+#join-room-button:hover {
+  background-color: rgba(40, 167, 69, 1);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Room status message */
+#room-status {
+  margin-top: 20px;
+  color: white;
+  font-size: 18px;
+  min-height: 24px;
+  text-align: center;
+  font-weight: 500;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Common container for all buttons */
+.button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+/* Input container */
+.input-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+/* Common styling for all buttons */
+#new-game-button,
+#load-button,
+#create-room-button,
+#join-room-button {
+  padding: 20px 40px;
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  background-color: rgba(40, 167, 69, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 2px;
+  width: 300px;
+  text-align: center;
+}
