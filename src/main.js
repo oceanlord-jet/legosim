@@ -252,12 +252,18 @@ document.querySelectorAll('.block').forEach((blockElement) => {
 
 window.addEventListener('mousedown', handleMouseClick);
 
-// Initialize socket connection
+// In main.js - Update socket connection
 const SOCKET_URL = import.meta.env.PROD 
-  ? "https://lego-simulator-server.onrender.com"  // Update after deployment
+  ? "https://lego-simulator-server.onrender.com" // Remove trailing slash if present
   : "http://localhost:3000";
 
-const socket = io(SOCKET_URL);
+const socket = io(SOCKET_URL, {
+  transports: ['websocket'],
+  reconnectionAttempts: 5,
+  reconnectionDelay: 1000,
+  timeout: 10000
+});
+
 let currentRoom = null;
 const players = new Map();
 const playerMeshes = new Map();
@@ -270,8 +276,20 @@ socket.on('connect', () => {
 });
 
 socket.on('connect_error', (error) => {
-  console.error('Connection error:', error);
-  document.getElementById('room-status').textContent = 'Server connection failed';
+  console.error('Connection error details:', {
+    message: error.message,
+    description: error.description,
+    context: SOCKET_URL
+  });
+  document.getElementById('room-status').textContent = 
+    `Server connection failed: ${error.message}`;
+});
+
+// Add connection attempt logging
+socket.on('reconnect_attempt', (attemptNumber) => {
+  console.log(`Reconnection attempt ${attemptNumber}`);
+  document.getElementById('room-status').textContent = 
+    `Reconnecting... (${attemptNumber})`;
 });
 
 // Player mesh creation
@@ -414,8 +432,13 @@ socket.on('blockRemoved', (position) => {
 
 // Error handling
 socket.on('connect_error', (error) => {
-  console.error('Connection error:', error);
-  document.getElementById('room-status').textContent = 'Connection error!';
+  console.error('Connection error details:', {
+    message: error.message,
+    description: error.description,
+    context: SOCKET_URL
+  });
+  document.getElementById('room-status').textContent = 
+    `Server connection failed: ${error.message}`;
 });
 
 // Add join room error handler
