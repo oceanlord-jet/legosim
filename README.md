@@ -140,13 +140,13 @@ lego-simulator/
 1. Create a Render account and create a new Web Service.
 2. Connect your GitHub repository.
 3. Configure the service:
-Build Command: npm install
-Start Command: npm start
-4.Set Environment Variables:
-NODE_ENV: production
-PORT: 3000
-CORS_ORIGIN: Your client URL (e.g., https://your-client.vercel.app)
-5.Deploy!
+   - Build Command: `npm install`
+   - Start Command: `npm start`
+4. Set Environment Variables:
+- NODE_ENV: production
+- PORT: 3000
+- CORS_ORIGIN: Your client URL (e.g., https://your-client.vercel.app)
+5. Deploy!
 
 ## Environment Variables
 
