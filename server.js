@@ -41,6 +41,8 @@ class Room {
     this.players = new Map();
     this.blocks = [];
     this.maxPlayers = ROOM_MAX_PLAYERS;
+    // Add ground state
+    this.groundLoaded = false;
   }
 
   addPlayer(socket, playerData) {
@@ -75,7 +77,8 @@ class Room {
   getState() {
     return {
       blocks: this.blocks,
-      players: Array.from(this.players.values())
+      players: Array.from(this.players.values()),
+      groundLoaded: this.groundLoaded
     };
   }
 }
@@ -163,6 +166,27 @@ io.on('connection', socket => {
         }
         break;
       }
+    }
+  });
+
+  socket.on('groundLoaded', (roomId) => {
+    const room = rooms.get(roomId);
+    if (room) {
+      room.groundLoaded = true;
+    }
+  });
+
+  socket.on('joinRoom', ({ roomId, playerData }) => {
+    const room = rooms.get(roomId);
+    if (room) {
+      room.addPlayer(socket, playerData);
+      socket.join(roomId);
+      
+      // Send current state including ground status
+      socket.emit('joinedRoom', {
+        roomId,
+        state: room.getState()
+      });
     }
   });
 });

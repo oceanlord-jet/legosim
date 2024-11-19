@@ -53,6 +53,7 @@ loadBlockModel(2, '/models/brown_2x2.glb', 0.47, 0.49, 0.47);
 loadBlockModel(3, '/models/darkred_2x2.glb', 0.47, 0.49, 0.47);
 loadBlockModel(4, '/models/purple_2x2.glb', 0.47, 0.49, 0.47);
 
+// In main.js - Update ground loading
 function loadGround() {
     loader.load('/models/green.glb', (gltf) => {
         const model = gltf.scene;
@@ -65,6 +66,11 @@ function loadGround() {
             }
         });
         scene.add(model);
+        
+        // Notify server ground is loaded
+        if (currentRoom) {
+            socket.emit('groundLoaded', currentRoom);
+        }
     });
 }
 
@@ -425,8 +431,17 @@ socket.on('roomError', (error) => {
 });
 
 // Game state management
+// Update loadGameState function
 function loadGameState(state) {
-  if (!state) {
+    if (!state) return;
+    
+    // Ensure ground exists
+    if (!scene.getObjectByName("ground")) {
+        loadGround();
+    }
+    
+    // Rest of state loading...
+    if (!state) {
     console.warn('No state provided to loadGameState');
     return;
   }
